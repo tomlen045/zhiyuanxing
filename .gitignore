@@ -1,0 +1,25 @@
+# 原始采集素材(273MB, 不入仓库; 数据已结构化入库, 重建走 import_*.py)
+data/
+*.pdf
+*.zip
+
+# 用户源文件(版权原因)
+*.xlsx
+*.xls
+
+# 运行时
+CURRENT_URL.txt
+__pycache__/
+*.pyc
+.DS_Store
+nohup.out
+
+# keeper.sh 含本机MySQL密码, 仓库只放 keeper.sh.example
+keeper.sh
+config.yml.named.bak*
+
+# 本地敏感配置
+.env
+config.yml.named.bak*
+
+site/.wrangler/

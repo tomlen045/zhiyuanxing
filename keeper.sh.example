@@ -1,0 +1,53 @@
+# 复制为 keeper.sh 并填入你的MySQL密码
+#!/bin/bash
+# 志愿星守护: app(8504) + cloudflared快速隧道 自愈
+APP_DIR="/Users/len/CodeBuddy/dx/志愿星"
+CF_DIR="$HOME/.cloudflared"
+LOG_TUNNEL="/tmp/zx_tunnel.log"
+URL_FILE="$APP_DIR/CURRENT_URL.txt"
+
+# 0. 防呆: config.yml 必须不存在(否则快速隧道全站404)
+if [ -f "$CF_DIR/config.yml" ]; then
+  mv "$CF_DIR/config.yml" "$CF_DIR/config.yml.named.bak.$(date +%s)"
+fi
+
+# 1. app 保活
+if ! lsof -t -iTCP:8504 -sTCP:LISTEN >/dev/null 2>&1; then
+  cd "$APP_DIR"
+  GAOKAO_PORT=8504 MYSQL_PASSWORD=你的MySQL密码 nohup /usr/bin/python3 app.py >> /tmp/zx_app.log 2>&1 &
+fi
+
+# 2. 隧道保活 (只管自己的这条, 不碰别人其他cloudflared)
+TUNNEL_HEALTHY=0
+if pgrep -f "cloudflared tunnel --url http://127.0.0.1:8504" >/dev/null 2>&1; then
+  # 进程在, 但要确认已注册且无致命错误(最近日志里出现NotFound视为僵尸)
+  if grep -q 'Registered tunnel connection' "$LOG_TUNNEL" 2>/dev/null &&      ! tail -20 "$LOG_TUNNEL" 2>/dev/null | grep -q 'Tunnel not found'; then
+    TUNNEL_HEALTHY=1
+  else
+    pkill -f "cloudflared tunnel --url http://127.0.0.1:8504" 2>/dev/null
+    sleep 2
+  fi
+fi
+if [ "$TUNNEL_HEALTHY" = "0" ]; then
+  : > "$LOG_TUNNEL"
+  cd /tmp
+  nohup /opt/homebrew/bin/cloudflared tunnel --url http://127.0.0.1:8504 >> "$LOG_TUNNEL" 2>&1 &
+  sleep 12
+  # Cloudflare API经常超时, 单次起不来就再试两次
+  for i in 1 2; do
+    if grep -q 'Registered tunnel connection' "$LOG_TUNNEL" 2>/dev/null; then break; fi
+    pkill -f "cloudflared tunnel --url http://127.0.0.1:8504" 2>/dev/null
+    sleep 3
+    : > "$LOG_TUNNEL"
+    nohup /opt/homebrew/bin/cloudflared tunnel --url http://127.0.0.1:8504 >> "$LOG_TUNNEL" 2>&1 &
+    sleep 12
+  done
+fi
+
+# 3. 刷新当前URL文件 (只在隧道真正注册成功后更新, 避免把API超时噪音写成地址)
+if grep -q 'Registered tunnel connection' "$LOG_TUNNEL" 2>/dev/null; then
+  URL=$(grep -o 'https://[a-z0-9-]*\.trycloudflare\.com' "$LOG_TUNNEL" 2>/dev/null | head -1)
+  if [ -n "$URL" ]; then
+    echo "$URL" > "$URL_FILE"
+  fi
+fi

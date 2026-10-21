@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>高考志愿填报智能分析平台 · 可实施方案 V1.0</title>
+<style>
+  :root{
+    --primary:#185FA5;--primary-light:#E6F1FB;--primary-dark:#0C447C;
+    --success:#0F6E56;--success-light:#E1F5EE;
+    --warning:#854F0B;--warning-light:#FAEEDA;
+    --danger:#A32D2D;--danger-light:#FCEBEB;
+    --text:#1F2329;--text-2:#4A5057;--text-3:#8A9099;
+    --bg:#F7F8FA;--card:#FFFFFF;--border:#E4E7EC;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);line-height:1.75;font-size:14px;}
+  .page{max-width:980px;margin:0 auto;padding:48px 32px 80px;}
+  header{text-align:center;margin-bottom:40px;}
+  header h1{font-size:26px;font-weight:600;color:var(--primary-dark);margin-bottom:8px;}
+  header .sub{color:var(--text-3);font-size:13px;}
+  header .meta{display:flex;gap:12px;justify-content:center;margin-top:16px;flex-wrap:wrap;}
+  .tag{display:inline-block;padding:4px 14px;border-radius:20px;font-size:12px;background:var(--primary-light);color:var(--primary);border:1px solid #B5D4F4;}
+  h2{font-size:19px;font-weight:600;color:var(--primary-dark);margin:48px 0 16px;padding-left:12px;border-left:4px solid var(--primary);}
+  h3{font-size:15px;font-weight:600;margin:24px 0 10px;color:var(--text);}
+  p{margin-bottom:10px;color:var(--text-2);}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:16px;}
+  ul,ol{padding-left:22px;margin-bottom:10px;color:var(--text-2);}
+  li{margin-bottom:6px;}
+  li b{color:var(--text);}
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13px;background:#fff;}
+  th{background:var(--primary-light);color:var(--primary-dark);font-weight:600;padding:10px 12px;text-align:left;border:1px solid #C9DCF2;}
+  td{padding:9px 12px;border:1px solid var(--border);color:var(--text-2);vertical-align:top;}
+  tr:nth-child(even) td{background:#FAFBFC;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+  @media(max-width:760px){.grid2,.grid3{grid-template-columns:1fr;}}
+  .feature{background:#fff;border:1px solid var(--border);border-radius:10px;padding:18px;}
+  .feature .fn{font-weight:600;font-size:14px;margin-bottom:6px;}
+  .feature .fn .no{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:6px;background:var(--primary);color:#fff;font-size:12px;margin-right:8px;}
+  .feature p{font-size:12.5px;margin:0;}
+  .callout{border-radius:10px;padding:16px 20px;margin:16px 0;font-size:13px;}
+  .callout.blue{background:var(--primary-light);border:1px solid #B5D4F4;}
+  .callout.green{background:var(--success-light);border:1px solid #9FE1CB;}
+  .callout.amber{background:var(--warning-light);border:1px solid #FAC775;}
+  .callout.red{background:var(--danger-light);border:1px solid #F7C1C1;}
+  .callout b{display:block;margin-bottom:4px;}
+  .flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:16px 0;}
+  .fstep{background:#fff;border:1.5px solid var(--primary);color:var(--primary-dark);border-radius:8px;padding:8px 14px;font-size:13px;font-weight:500;flex:1;min-width:110px;text-align:center;}
+  .farr{color:var(--text-3);font-size:15px;}
+  .phase{border-left:3px solid var(--primary);padding:14px 18px;background:#fff;border-radius:0 10px 10px 0;margin-bottom:14px;border-top:1px solid var(--border);border-right:1px solid var(--border);border-bottom:1px solid var(--border);}
+  .phase .pt{font-weight:600;font-size:14px;color:var(--primary-dark);display:flex;justify-content:space-between;flex-wrap:wrap;}
+  .phase .pt span{color:var(--text-3);font-weight:400;font-size:12px;}
+  .phase p{font-size:13px;margin:6px 0 0;}
+  .check{display:flex;gap:10px;align-items:flex-start;background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:10px;}
+  .check input{margin-top:5px;transform:scale(1.25);accent-color:var(--primary);flex-shrink:0;}
+  .check label{font-size:13.5px;color:var(--text-2);}
+  .check label b{color:var(--text);}
+  .kbd{background:#EFF1F4;border:1px solid var(--border);border-radius:4px;padding:1px 6px;font-family:ui-monospace,monospace;font-size:12px;}
+  .num{color:var(--primary);font-weight:600;}
+  footer{margin-top:60px;text-align:center;color:var(--text-3);font-size:12px;border-top:1px solid var(--border);padding-top:20px;}
+  .toc{background:#fff;border:1px solid var(--border);border-radius:12px;padding:20px 24px;columns:2;column-gap:32px;}
+  @media(max-width:760px){.toc{columns:1;}}
+  .toc a{display:block;color:var(--text-2);text-decoration:none;font-size:13px;padding:3px 0;}
+  .toc a:hover{color:var(--primary);}
+  .sec{scroll-margin-top:20px;}
+  .src-badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;margin-left:6px;vertical-align:middle;}
+  .badge-free{background:var(--success-light);color:var(--success);}
+  .badge-half{background:var(--warning-light);color:var(--warning);}
+  .badge-pay{background:var(--danger-light);color:var(--danger);}
+</style>
+</head>
+<body>
+<div class="page">
+
+<header>
+  <h1>高考志愿填报智能分析平台</h1>
+  <div class="sub">近5年全国录取数据 · 录取概率预测 · 就业前景分析 · 个性化推荐 · 提分路径规划</div>
+  <div class="meta">
+    <span class="tag">方案版本 V1.1 · 6项决策已确认</span>
+    <span class="tag">2026年10月16日</span>
+    <span class="tag">已进入Phase 1</span>
+  </div>
+  <div class="toc" style="text-align:left;margin-top:24px;">
+    <a href="#s1">1. 项目概览与需求完善</a>
+    <a href="#s2">2. 数据源与数据规模</a>
+    <a href="#s3">3. 系统架构设计</a>
+    <a href="#s4">4. 核心算法设计</a>
+    <a href="#s5">5. 功能模块详设</a>
+    <a href="#s6">6. 分期实施计划</a>
+    <a href="#s7">7. 技术选型清单</a>
+    <a href="#s8">8. 合规与风险控制</a>
+    <a href="#s9">9. 待您确认的关键决策</a>
+    <a href="#s10">10. 成本与人力估算</a>
+  </div>
+</header>
+
+<!-- ============ 1 项目概览 ============ -->
+<h2 class="sec" id="s1">1. 项目概览与需求完善</h2>
+
+<div class="card">
+<h3>1.1 您的原始需求（3条）</h3>
+<ol>
+  <li>收集近5年全国高考文科/理科每个大学每个专业的录取分数，预测将来录取线；给出每个学校专业毕业后的对口工作、可去公司、月薪/年收入</li>
+  <li>按文/理科别+单科分数+总分，推荐5个大学及专业，用大白话解释为什么选</li>
+  <li>对推荐结果不满足时，分析单科提分空间，规划努力方向冲更好学校</li>
+</ol>
+
+<h3>1.2 我的补充与修正建议（重要）</h3>
+<table>
+  <tr><th style="width:18%;">维度</th><th style="width:30%;">原需求</th><th style="width:52%;">建议完善为</th></tr>
+  <tr>
+    <td><b>预测方法</b></td>
+    <td>预测"录取分数线"</td>
+    <td>预测"<b>录取位次区间</b>"+换算等值分。试题难度年年变，分数会漂移，<b>位次才是稳定锚点</b>；同时输出"冲/稳/保"三档概率（如65%/85%/97%），比单一线差更科学也不误导考生</td>
+  </tr>
+  <tr>
+    <td><b>科类覆盖</b></td>
+    <td>文科 / 理科</td>
+    <td><b>新高考"3+1+2"和"3+3"模式</b>（物理类/历史类+选考科目要求）与老文理并行。2025年起全国已基本完成新高考改革，只做文理会漏掉大部分省份考生</td>
+  </tr>
+  <tr>
+    <td><b>就业数据</b></td>
+    <td>对口工作/公司/薪资</td>
+    <td>补充数据口径：应届起薪 vs 5-10年薪资中位数、就业率、主要去向城市，并标注"参考区间"而非精确值（就业数据天然有滞后性和方差）</td>
+  </  </tr>
+  <tr>
+    <td><b>提分模型</b></td>
+    <td>分析单科可提升多少分</td>
+    <td>基于<b>单科分数-提分难度曲线</b>（边际效应递减：90→110易、130→140难），结合目标院校专业组近3年单科要求（如英语≥120）与选科匹配，输出"每科提几分、优先投入哪科、ROI排序"</td>
+  </tr>
+  <tr>
+    <td><b>推荐理由</b></td>
+    <td>用大白话分析</td>
+    <td>结构化生成：录取概率+位次差+专业实力（学科评估等级）+就业去向+学风/城市因素，模板化文案确保"人话"且不踩夸大宣传的合规红线</td>
+  </tr>
+  <tr>
+    <td><b>平台形态</b></td>
+    <td>未明确</td>
+    <td>Web端为主（考生+家长共用），预留微信小程序入口；管理后台用于数据采集与运营</td>
+  </tr>
+</table>
+
+<div class="callout blue">
+  <b>核心产品理念</b>
+  用"位次锚定 + 概率表达 + 大白话解读 + 就业闭环"四件事，做成考生和家长<b>看得懂、信得过、用得起</b>的志愿决策工具，而不是一个冰冷的数据库检索系统。
+</div>
+</div>
+
+<!-- ============ 2 数据源 ============ -->
+<h2 class="sec" id="s2">2. 数据源与数据规模</h2>
+
+<div class="card">
+<h3>2.1 数据源清单</h3>
+<table>
+  <tr><th>数据类别</th><th>来源渠道</th><th>更新频率</th><th>获取难度</th></tr>
+  <tr>
+    <td><b>院校专业录取分数/位次</b></td>
+    <td>①各省考试院公开的投档线表（PDF/网页）②高校本科招生网历年"录取分数查询"③阳光高考平台公示数据<span class="src-badge badge-free">免费·需采集</span></td>
+    <td>每年7-8月</td>
+    <td>中：各省格式不一，需逐省解析</td>
+  </tr>
+  <tr>
+    <td><b>一分一段表</b></td>
+    <td>各省考试院官网<span class="src-badge badge-free">免费</span></td>
+    <td>每年6月</td>
+    <td>低：结构统一易解析</td>
+  </tr>
+  <tr>
+    <td><b>招生计划（专业+人数+选科要求）</b></td>
+    <td>各省《招生专业目录》电子版/考试院计划查询系统<span class="src-badge badge-half">部分省免费</span></td>
+    <td>每年6月</td>
+    <td>中高：部分省只有纸质或查询式网页</td>
+  </tr>
+  <tr>
+    <td><b>高校信息/学科实力</b></td>
+    <td>教育部学科评估结果公开名单、双一流名单、学校官网<span class="src-badge badge-free">免费</span></td>
+    <td>低频（数年一次）</td>
+    <td>低</td>
+  </tr>
+  <tr>
+    <td><b>就业薪资数据</b></td>
+    <td>①麦可思《中国本科生就业报告》(就业蓝皮书，每年出版)②各高校就业质量年度报告（高校官网公开）③招聘平台薪酬报告（公开版）<span class="src-badge badge-half">报告需购买·高校报告免费</span></td>
+    <td>每年</td>
+    <td>中：口径需统一清洗</td>
+  </tr>
+  <tr>
+    <td><b>专业介绍/对口职业</b></td>
+    <td>教育部《普通高等学校本科专业目录》+专业百科知识库自建<span class="src-badge badge-free">免费/自建</span></td>
+    <td>低频</td>
+    <td>低</td>
+  </tr>
+</table>
+
+<h3>2.2 数据规模估算（近5年）</h3>
+<ul>
+  <li>院校：全国约 <span class="num">3,100+</span> 所（本科1,300+ / 专科1,600+，按本科优先）</li>
+  <li>院校专业（或专业组）：约 <span class="num">4~7万</span> 个/年 × 5年 × 31省 ≈ <span class="num">600万~1,000万</span> 条录取记录</li>
+  <li>一分一段表：31省 × 5年 × 2科类 ≈ <span class="num">310</span> 份，每份几百行</li>
+  <li>就业报告：高校就业质量报告 3,000+ 份/年（可先做本科Top500院校）</li>
+</ul>
+<div class="callout amber">
+  <b>务实策略</b>
+  一期不追求"全国全量"，先做<b>本科批次 + 优先覆盖10个高考大省</b>（河南/广东/山东/四川/河北/安徽/江苏/湖南/湖北/浙江），覆盖约60%考生；数据管道跑通后再扩到31省。
+</div>
+</div>
+
+<!-- ============ 3 架构 ============ -->
+<h2 class="sec" id="s3">3. 系统架构设计</h2>
+
+<div class="card">
+<div class="flow">
+  <div class="fstep">数据采集层<br><span style="font-size:11px;color:var(--text-3);">31省爬虫+人工校验</span></div><div class="farr">→</div>
+  <div class="fstep">清洗标准化层<br><span style="font-size:11px;color:var(--text-3);">院校/专业/科类编码统一</span></div><div class="farr">→</div>
+  <div class="fstep">主数据仓库<br><span style="font-size:11px;color:var(--text-3);">MySQL+历史快照</span></div><div class="farr">→</div>
+</div>
+<div class="flow">
+  <div class="fstep">分析引擎层<br><span style="font-size:11px;color:var(--text-3);">位次预测/推荐/提分算法</span></div><div class="farr">→</div>
+  <div class="fstep">应用服务层<br><span style="font-size:11px;color:var(--text-3);">Spring Boot API</span></div><div class="farr">→</div>
+  <div class="fstep">用户层<br><span style="font-size:11px;color:var(--text-3);">Web+小程序+管理后台</span></div>
+</div>
+
+<h3>3.1 核心数据表设计（简版）</h3>
+<table>
+  <tr><th style="width:22%;">表</th><th>关键字段</th></tr>
+  <tr><td><b>school</b>（院校）</td><td>院校代码、名称、层级(985/211/双一流/普本)、城市、官网、标签</td></tr>
+  <tr><td><b>major</b>（专业）</td><td>专业代码(教育部8位)、名称、学科门类、学制、学位类型</td></tr>
+  <tr><td><b>major_group</b>（院校专业组）</td><td>院校id、组代码、省份、年份、选科要求(物理/历史+再选科目)、组内专业列表</td></tr>
+  <tr><td><b>admission_score</b>（录取数据）</td><td>省份、年份、科类、院校专业组id、专业id、计划数、录取数、最低分、最低位次、平均分、最高分</td></tr>
+  <tr><td><b>score_rank</b>（一分一段）</td><td>省份、年份、科类、分数、本段人数、累计人数(位次)</td></tr>
+  <tr><td><b>employment</b>（就业）</td><td>专业id、院校id、届别、就业率、深造率、平均起薪、5年薪资中位数、主要行业TOP3、代表企业、主要城市</td></tr>
+  <tr><td><b>major_career</b>（专业-职业映射）</td><td>专业id、职业方向、典型岗位、任职要求、发展路径</td></tr>
+  <tr><td><b>user_profile / recommend_log</b></td><td>考生省份、科类、各科分数、选科组合；推荐结果与反馈</td></tr>
+</table>
+<p style="font-size:12.5px;color:var(--text-3);">注：表结构延续您现有资产台账系统的 Spring Boot 3.x + MyBatis-Plus + MySQL 技术栈，可复用基础框架与代码风格。</p>
+</div>
+
+<!-- ============ 4 算法 ============ -->
+<h2 class="sec" id="s4">4. 核心算法设计</h2>
+
+<div class="card">
+<h3>4.1 录取概率预测（需求1核心）</h3>
+<p><b>方法：位次锚定 + 等位分换算 + 波动区间</b></p>
+<ol>
+  <li>取目标院校专业组近5年"最低录取位次"，清洗异常年（扩招/缩招/合并批次导致的跳变）</li>
+  <li>用当年一分一段表把考生分数换算成<b>等位分</b>，与历年数据对齐比较</li>
+  <li>计算"考生位次 - 平均录取位次"的标准化距离 d</li>
+  <li>映射到概率：<b>P(录取) = f(d, σ)</b>，σ为近5年位次波动标准差</li>
+  <li>输出三档建议：冲(d&lt;0且P≥30%)、稳(P 65%~90%)、保(P≥95%)</li>
+</ol>
+<div class="callout green">
+  <b>大白话示例输出</b>
+  "华中科技大学-计算机类(物理类)：您今年位次8,200，该专业组近5年录取位次在7,000~9,000之间浮动，平均8,000。<b>录取概率约72%，属于'稳'档</b>。去年扩招了15个名额，今年计划还没公布，建议关注6月的计划更新。"
+</div>
+
+<h3>4.2 智能推荐算法（需求2核心）</h3>
+<p><b>多目标排序：录取概率 × 专业匹配 × 就业前景</b></p>
+<ol>
+  <li><b>硬过滤</b>：省份招生计划存在 + 选科要求匹配 + 体检限制排除</li>
+  <li><b>候选池</b>：按位次差 ±15% 圈出约200个院校专业组</li>
+  <li><b>打分排序</b>：Score = w1×概率档位分 + w2×院校层次分(双一流/学科评估A/B档) + w3×就业分(起薪+5年薪资+就业率) + w4×城市分 + w5×考生偏好(可选问卷)</li>
+  <li><b>组合输出</b>：从Top候选中按"1冲+2稳+2保"结构选5个，保证梯度合理</li>
+  <li><b>理由生成</b>：模板引擎按数据字段填充，确保每个理由有数字依据</li>
+</ol>
+
+<h3>4.3 提分路径规划（需求3核心）</h3>
+<p><b>边际提分模型 + 目标差距分解</b></p>
+<ol>
+  <li>确定目标院校专业组的<b>门槛位次</b>（近3年中位）→ 反推所需总分</li>
+  <li>差距 = 所需总分 - 当前总分（若为负则无需提分，转推荐更高目标）</li>
+  <li>对每科评估<b>提分潜力</b>：潜力 = 剩余空间 × 边际难度系数。分数越高的科目，每提1分投入越大（如语文130+每分成本是数学100段的3倍）</li>
+  <li>输出<b>ROI排序</b>：优先投入"分数中等(90~115)、提升曲线陡"的科目</li>
+  <li>结合专业单科要求加权（目标外语类专业则英语提分权重×2）</li>
+</ol>
+<div class="callout green">
+  <b>大白话示例输出</b>
+  "您的目标武汉大学-计算机(物理类)还差约<b>18分</b>。分析您各科：数学108分处在'黄金提分区'，主攻中档大题有望<b>+12分</b>；物理72分基础薄弱但框架题固定，<b>+8分</b>可行；语文125分已接近天花板，不建议再投入。<b>建议：数学每周2套中档题限时训练 + 物理专攻电磁学专题</b>，合计预期+20分，达到目标门槛。"
+</div>
+</div>
+
+<!-- ============ 5 功能模块 ============ -->
+<h2 class="sec" id="s5">5. 功能模块详设</h2>
+
+<div class="card">
+<div class="grid3">
+  <div class="feature"><div class="fn"><span class="no">1</span>数据查询中心</div><p>院校/专业多维检索：按省份、科类、分数段、城市、院校类型筛选；录取数据5年趋势图表；一分一段表查询</p></div>
+  <div class="feature"><div class="fn"><span class="no">2</span>录取概率测算</div><p>输入分数+位次 → 输出任意院校专业的录取概率（冲/稳/保三档）+ 近5年位次趋势可视化</p></div>
+  <div class="feature"><div class="fn"><span class="no">3</span>智能推荐</div><p>填写科类/各科分数/选科 → 5个推荐（1冲2稳2保）+ 每个大白话理由 + 就业前景卡片</p></div>
+  <div class="feature"><div class="fn"><span class="no">4</span>就业前景百科</div><p>专业→对口职业→代表公司→薪资区间（应届/5年）→ 主要城市；数据来源标注</p></div>
+  <div class="feature"><div class="fn"><span class="no">5</span>提分规划器</div><p>选定理想院校 → 差距分解 → 各科提分潜力评估 → ROI排序 → 学习建议</p></div>
+  <div class="feature"><div class="fn"><span class="no">6</span>志愿表管理</div><p>考生自建志愿草表（模拟填报），梯度检查提示（如"前3个全是冲档，风险高"）</p></div>
+  <div class="feature"><div class="fn"><span class="no">7</span>对比工具</div><p>院校PK：录取线/学科实力/就业去向/城市并排对比</p></div>
+  <div class="feature"><div class="fn"><span class="no">8</span>管理后台</div><p>数据采集任务监控、异常数据人工校验、内容运营（专业解读文章）</p></div>
+  <div class="feature"><div class="fn"><span class="no">9</span>账号与权限</div><p>考生注册登录（预留手机号验证）、浏览历史、收藏夹</p></div>
+</div>
+
+<h3>5.1 页面结构（Web端）</h3>
+<table>
+  <tr><th style="width:20%;">页面</th><th>核心内容</th></tr>
+  <tr><td>首页</td><td>搜索框 + 快捷入口（测概率/智能推荐/提分规划）+ 热门专业/院校榜</td></tr>
+  <tr><td>推荐结果页</td><td>5张推荐卡：院校专业组名 + 概率徽章(冲/稳/保) + 展开大白话理由 + 就业薪资摘要 + "不满意？测提分"入口</td></tr>
+  <tr><td>院校详情页</td><td>基本信息 → 各省份历年录取线/位次表 → 专业组列表 → 就业质量数据</td></tr>
+  <tr><td>专业详情页</td><td>专业介绍 → 开设院校及分数 → 对口职业/公司/薪资 → 学长学姐去向</td></tr>
+  <tr><td>提分报告页</td><td>目标差距 → 各科雷达图（当前vs目标）→ ROI排序表 → 行动建议</td></tr>
+</table>
+</div>
+
+<!-- ============ 6 实施计划 ============ -->
+<h2 class="sec" id="s6">6. 分期实施计划</h2>
+
+<div class="card">
+<div class="phase">
+  <div class="pt">Phase 0：方案确认与选型敲定 <span>0.5个月</span></div>
+  <p>确认第9节决策点 → 确定首期覆盖省份范围 → 敲定部署方式（云服务器/本地）</p>
+</div>
+<div class="phase">
+  <div class="pt">Phase 1：数据地基（MVP数据版） <span>1.5个月</span></div>
+  <p>搭建爬虫管道（10省优先）→ 院校/专业/一分一段数据入库 → 数据清洗与编码标准化 → 人工抽验机制上线。<b>里程碑：500万+条录取数据可用</b></p>
+</div>
+<div class="phase">
+  <div class="pt">Phase 2：核心功能MVP <span>2个月</span></div>
+  <p>录取概率测算 + 数据查询中心 + 智能推荐（1冲2稳2保）→ Web前端 → 管理后台基础版。<b>里程碑：身边考生/家长可用MVP真实试用</b></p>
+</div>
+<div class="phase">
+  <div class="pt">Phase 3：就业数据+提分规划 <span>1.5个月</span></div>
+  <p>就业百科（专业→职业→公司→薪资）→ 提分规划器 → 对比工具 → 志愿表管理</p>
+</div>
+<div class="phase">
+  <div class="pt">Phase 4：扩量与打磨 <span>2个月+</span></div>
+  <p>扩至31省数据 → 微信小程序 → 推荐算法迭代（引入反馈学习）→ 性能优化</p>
+</div>
+<div class="callout blue">
+  <b>总计：约7.5个月完整版本；MVP约4个月可用</b>。若为个人开发节奏可拉长，关键路径是<b>数据采集质量</b>而非代码。
+</div>
+</div>
+
+<!-- ============ 7 技术选型 ============ -->
+<h2 class="sec" id="s7">7. 技术选型清单</h2>
+
+<div class="card">
+<table>
+  <tr><th>层</th><th>选型</th><th>理由</th></tr>
+  <tr><td>后端</td><td>Spring Boot 3.x + MyBatis-Plus</td><td>与您现有台账系统同栈，经验直接复用</td></tr>
+  <tr><td>数据库</td><td>MySQL 8（主库）+ Redis（缓存热门查询）</td><td>千万级记录够用；位次查询高频需缓存</td></tr>
+  <tr><td>前端</td><td>Vue 3 + ECharts</td><td>趋势图表多，ECharts最成熟</td></tr>
+  <tr><td>数据采集</td><td>Python + Playwright（应对动态网页）</td><td>各省考试院网站技术栈杂，需浏览器级采集</td></tr>
+  <tr><td>部署</td><td>Docker Compose（云服务器2核8G起步）</td><td>轻量可控，扩容方便</td></tr>
+  <tr><td>就业数据</td><td>麦可思报告(采购1份年度版) + 高校就业质量报告人工+半自动采集</td><td>权威口径优先，兼顾成本</td></tr>
+</table>
+</div>
+
+<!-- ============ 8 合规 ============ -->
+<h2 class="sec" id="s8">8. 合规与风险控制</h2>
+
+<div class="card">
+<div class="callout red">
+  <b>红线1：数据版权</b>各省考试院公开数据可采集使用，但需注明来源；麦可思报告数据有版权，若商用需购买授权（个人研究范围内合理引用）。
+</div>
+<div class="callout red">
+  <b>红线2：预测免责</b>所有概率输出必须标注"仅供参考，不构成录取承诺"；就业薪资标注"基于XX年公开报告的统计区间"。教育类服务夸大宣传是市场监管重点领域。
+</div>
+<div class="callout amber">
+  <b>风险3：数据准确性</b>建立"爬取→自动校验规则→人工抽验"三级质检：如"最低分>平均分"这类逻辑错误自动拦截；上线前对Top100院校人工核对。
+</div>
+<div class="callout amber">
+  <b>风险4：反爬与网站变动</b>考试院网站每年改版，爬虫需维护窗口；控制采集频率（错峰、限速），只取公开数据。
+</div>
+</div>
+
+<!-- ============ 9 决策点 ============ -->
+<h2 class="sec" id="s9">9. 关键决策（已于2026-10-16全部确认）</h2>
+
+<div class="card">
+<div class="check"><input type="checkbox" checked disabled><label><b>决策1 - 首期省份范围：</b>✅ <b>全国31省</b>。采用P0/P1/P2三层推进策略，P0十省先行跑通管道，预计总数据量约880万条</label></div>
+<div class="check"><input type="checkbox" checked disabled><label><b>决策2 - 新高考适配深度：</b>✅ <b>精确到再选科目匹配</b>。major_group 表存储首选+再选要求，支持 any/all 两种匹配逻辑</label></div>
+<div class="check"><input type="checkbox" checked disabled><label><b>决策3 - 就业数据口径：</b>✅ <b>免费公开报告</b>。高校就业质量年度报告(Top500院校) + 招聘平台公开薪酬数据</label></div>
+<div class="check"><input type="checkbox" checked disabled><label><b>决策4 - 平台定位：</b>✅ <b>自用试用</b>。暂不涉及ICP备案与等保，正式开放前再评估</label></div>
+<div class="check"><input type="checkbox" checked disabled><label><b>决策5 - 部署方式：</b>✅ <b>Mac本地开发 → 公网发布</b>。试用期frp内网穿透，正式期2核8G云服务器+Docker Compose</label></div>
+<div class="check"><input type="checkbox" checked disabled><label><b>决策6 - 提分建议深度：</b>✅ <b>细化到具体学习专题</b>。建study_topic知识库(约500条, 9科×55专题) + 提分边际成本曲线表</label></div>
+<div class="callout green" style="margin-top:12px;">
+  <b>下一步</b>决策已全部锁定，配套产出：<b>sql/001_init.sql</b>（完整数据库DDL，16张表）与 <b>docs/Phase1-数据采集技术方案.md</b>（31省采集策略、质检规则、里程碑清单）。
+</div>
+</div>
+
+<!-- ============ 10 成本 ============ -->
+<h2 class="sec" id="s10">10. 成本与人力估算</h2>
+
+<div class="card">
+<table>
+  <tr><th>项目</th><th>最小配置（自用/试用）</th><th>标准配置（公开运营）</th></tr>
+  <tr><td>人力</td><td>1名全栈（您）+ 阶段性数据兼职1人</td><td>全栈1 + 数据工程1 + 前端0.5 + 运营0.5</td></tr>
+  <tr><td>服务器</td><td>2核8G云主机 ≈ ¥200/月</td><td>4核16G+CDN+备份 ≈ ¥800/月</td></tr>
+  <tr><td>数据采购</td><td>¥0（公开数据+高校免费报告）</td><td>麦可思报告 ¥3,000~8,000/年</td></tr>
+  <tr><td>其他</td><td>域名+备案 ¥100/年</td><td>+ 等保测评/合规咨询按需</td></tr>
+  <tr><td><b>首年合计</b></td><td><b>≈ ¥3,000</b></td><td><b>≈ ¥2~4万 + 人力</b></td></tr>
+</table>
+<p style="font-size:12.5px;color:var(--text-3);">注：以上为2026年10月市场价参考量级，实际以采购为准。</p>
+</div>
+
+<footer>
+  高考志愿填报智能分析平台 · 可实施方案 V1.1 · 2026-10-16<br>
+  6项决策已确认 · Phase 1 技术方案与数据库DDL已产出（docs/ 与 sql/ 目录）
+</footer>
+
+</div>
+</body>
+</html>
